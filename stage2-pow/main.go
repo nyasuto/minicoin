@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/nyasuto/minicoin/common"
@@ -14,20 +15,26 @@ import (
 
 // Blockchain はPoWマイニング対応のブロックチェーン
 type Blockchain struct {
-	Blocks     []*Block
-	Difficulty int // デフォルトの難易度
+	Blocks          []*Block
+	Difficulty      int // 現在の難易度
+	TargetBlockTime int // 目標ブロック生成時間（秒）
+	mutex           sync.RWMutex
 }
 
 // NewBlockchain は新しいブロックチェーンを生成します
 func NewBlockchain(difficulty int) *Blockchain {
 	return &Blockchain{
-		Blocks:     []*Block{NewGenesisBlock(difficulty)},
-		Difficulty: difficulty,
+		Blocks:          []*Block{NewGenesisBlock(difficulty)},
+		Difficulty:      difficulty,
+		TargetBlockTime: TargetBlockTime, // difficulty.goの定数を使用
 	}
 }
 
 // AddBlock はチェーンに新しいブロックを追加します（マイニング実行）
 func (bc *Blockchain) AddBlock(data string) (*MiningMetrics, error) {
+	bc.mutex.Lock()
+	defer bc.mutex.Unlock()
+
 	previousBlock := bc.Blocks[len(bc.Blocks)-1]
 
 	newBlock := NewBlock(
@@ -44,11 +51,25 @@ func (bc *Blockchain) AddBlock(data string) (*MiningMetrics, error) {
 	}
 
 	bc.Blocks = append(bc.Blocks, newBlock)
+
+	// 難易度の自動調整
+	if ShouldAdjustDifficulty(bc) {
+		oldDifficulty := bc.Difficulty
+		bc.Difficulty = CalculateDifficulty(bc, bc.TargetBlockTime)
+		if oldDifficulty != bc.Difficulty {
+			// 難易度が変更された場合のログ（オプション）
+			_ = oldDifficulty // 将来のログ用に残す
+		}
+	}
+
 	return metrics, nil
 }
 
 // GetLatestBlock はチェーンの最新ブロックを返します
 func (bc *Blockchain) GetLatestBlock() *Block {
+	bc.mutex.RLock()
+	defer bc.mutex.RUnlock()
+
 	if len(bc.Blocks) == 0 {
 		return nil
 	}
@@ -57,11 +78,17 @@ func (bc *Blockchain) GetLatestBlock() *Block {
 
 // GetChainLength はチェーンの長さを返します
 func (bc *Blockchain) GetChainLength() int {
+	bc.mutex.RLock()
+	defer bc.mutex.RUnlock()
+
 	return len(bc.Blocks)
 }
 
 // IsValid はチェーン全体の整合性を検証します（PoW検証を含む）
 func (bc *Blockchain) IsValid() bool {
+	bc.mutex.RLock()
+	defer bc.mutex.RUnlock()
+
 	if len(bc.Blocks) == 0 {
 		return false
 	}
@@ -147,10 +174,12 @@ func runInteractiveCLI(bc *Blockchain) {
 		case "6":
 			changeDifficulty(bc, reader)
 		case "7":
+			displayDifficultyStats(bc)
+		case "8":
 			fmt.Println("\n👋 Minicoinをご利用いただきありがとうございました！")
 			return
 		default:
-			fmt.Println("❌ 無効な選択です。1-7の数字を入力してください。")
+			fmt.Println("❌ 無効な選択です。1-8の数字を入力してください。")
 		}
 	}
 }
@@ -174,7 +203,8 @@ func printMenu() {
 	fmt.Println("4. チェーンを検証")
 	fmt.Println("5. パフォーマンス比較")
 	fmt.Println("6. 難易度を変更")
-	fmt.Println("7. 終了")
+	fmt.Println("7. 難易度統計を表示")
+	fmt.Println("8. 終了")
 	fmt.Println("====================================")
 }
 
@@ -248,6 +278,9 @@ func addBlockInteractive(bc *Blockchain, reader *bufio.Reader) {
 		return
 	}
 
+	// 難易度変更を検出するため、現在の難易度を保存
+	oldDifficulty := bc.Difficulty
+
 	fmt.Printf("\n⛏️  難易度 %d でマイニング中...\n", bc.Difficulty)
 
 	metrics, err := bc.AddBlock(data)
@@ -268,6 +301,22 @@ func addBlockInteractive(bc *Blockchain, reader *bufio.Reader) {
 	fmt.Printf("   🔢 試行回数:     %d 回\n", metrics.AttemptsCount)
 	fmt.Printf("   ⚡ ハッシュレート: %.2f hashes/sec\n", metrics.HashRate)
 	fmt.Println("────────────────────────────────────────────────────────")
+
+	// 難易度が変更された場合に通知
+	if bc.Difficulty != oldDifficulty {
+		fmt.Println()
+		fmt.Println("🔧 難易度調整が発生しました！")
+		fmt.Println("────────────────────────────────────────────────────────")
+		fmt.Printf("   %d → %d", oldDifficulty, bc.Difficulty)
+		if bc.Difficulty > oldDifficulty {
+			fmt.Println(" (難易度上昇 ⬆️)")
+			fmt.Println("   平均ブロック時間が目標より短かったため、難易度が上がりました")
+		} else {
+			fmt.Println(" (難易度低下 ⬇️)")
+			fmt.Println("   平均ブロック時間が目標より長かったため、難易度が下がりました")
+		}
+		fmt.Println("────────────────────────────────────────────────────────")
+	}
 }
 
 // displayChain はチェーン全体を表示します
@@ -383,4 +432,47 @@ func changeDifficulty(bc *Blockchain, reader *bufio.Reader) {
 
 	bc.Difficulty = difficulty
 	fmt.Printf("✓ 難易度を %d に変更しました\n", difficulty)
+}
+
+// displayDifficultyStats は難易度統計情報を表示します
+func displayDifficultyStats(bc *Blockchain) {
+	stats := GetDifficultyStatsFromChain(bc)
+
+	fmt.Println("\n╔════════════════════════════════════════════════════════╗")
+	fmt.Println("║  難易度調整統計                                        ║")
+	fmt.Println("╚════════════════════════════════════════════════════════╝")
+	fmt.Println()
+	fmt.Println("📊 現在の難易度情報")
+	fmt.Println("────────────────────────────────────────────────────────")
+	fmt.Printf("現在の難易度:       %d\n", stats.CurrentDifficulty)
+	fmt.Printf("目標ブロック時間:   %d 秒\n", stats.TargetBlockTime)
+	if stats.AverageBlockTime > 0 {
+		fmt.Printf("平均ブロック時間:   %.2f 秒\n", stats.AverageBlockTime)
+
+		// パフォーマンス評価
+		ratio := stats.AverageBlockTime / float64(stats.TargetBlockTime)
+		if ratio > 1.2 {
+			fmt.Printf("状態:               ⚠️  遅い (目標の %.1f倍)\n", ratio)
+		} else if ratio < 0.8 {
+			fmt.Printf("状態:               ⚡ 速い (目標の %.1f倍)\n", ratio)
+		} else {
+			fmt.Printf("状態:               ✓ 適正 (目標の %.1f倍)\n", ratio)
+		}
+	} else {
+		fmt.Println("平均ブロック時間:   (データ不足)")
+		fmt.Println("状態:               (計算不可)")
+	}
+	fmt.Println()
+	fmt.Println("📈 調整情報")
+	fmt.Println("────────────────────────────────────────────────────────")
+	fmt.Printf("調整間隔:           %d ブロックごと\n", AdjustmentInterval)
+	fmt.Printf("次回調整まで:       %d ブロック\n", stats.NextAdjustment)
+	fmt.Printf("チェーンの長さ:     %d ブロック\n", bc.GetChainLength())
+	fmt.Println("────────────────────────────────────────────────────────")
+	fmt.Println()
+	fmt.Println("💡 ヒント:")
+	fmt.Println("  - 難易度は自動調整されます")
+	fmt.Println("  - 調整は10ブロックごとに行われます")
+	fmt.Println("  - 平均時間が目標より長い場合、難易度は下がります")
+	fmt.Println("  - 平均時間が目標より短い場合、難易度は上がります")
 }
