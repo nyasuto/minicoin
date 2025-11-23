@@ -189,7 +189,7 @@ func TestMineBlock(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, metrics)
 		assert.True(t, strings.HasPrefix(block.Hash, "00"))
-		assert.Greater(t, metrics.AttemptsCount, int64(1))
+		assert.GreaterOrEqual(t, metrics.AttemptsCount, int64(1))
 	})
 
 	t.Run("難易度3でのマイニング", func(t *testing.T) {

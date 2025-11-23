@@ -44,7 +44,12 @@ func NewBlock(index int64, data string, previousHash string, difficulty int) *Bl
 func NewGenesisBlock(difficulty int) *Block {
 	block := NewBlock(0, "Genesis Block", "", difficulty)
 	// ジェネシスブロックもマイニングする
-	MineBlock(block, difficulty)
+	_, err := MineBlock(block, difficulty)
+	if err != nil {
+		// ジェネシスブロックのマイニング失敗は通常起こらないが、
+		// 念のためパニックする
+		panic(fmt.Sprintf("failed to mine genesis block: %v", err))
+	}
 	return block
 }
 
