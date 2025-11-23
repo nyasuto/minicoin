@@ -26,6 +26,11 @@ type Dashboard struct {
 	// 更新制御
 	updateInterval time.Duration
 	stopChan       chan bool
+
+	// マイニング制御
+	isMining       bool
+	miningStopChan chan bool
+	miningCounter  int
 }
 
 // NewDashboard は新しいダッシュボードを作成します
@@ -37,6 +42,8 @@ func NewDashboard(bc *Blockchain) *Dashboard {
 		blockchain:     bc,
 		updateInterval: 1 * time.Second,
 		stopChan:       make(chan bool),
+		miningStopChan: make(chan bool),
+		isMining:       false,
 	}
 
 	// パネルの作成
@@ -86,7 +93,7 @@ func (d *Dashboard) createHelpPanel() *tview.TextView {
 	panel := tview.NewTextView().
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignCenter).
-		SetText("[yellow]Keys:[white] [green]q[white] Quit | [green]r[white] Refresh | [green]Ctrl+C[white] Exit")
+		SetText("[yellow]Keys:[white] [green]q[white] Quit | [green]r[white] Refresh | [green]m[white] Mining Start/Stop | [green]Ctrl+C[white] Exit")
 
 	panel.SetBorder(false)
 
@@ -101,6 +108,9 @@ func (d *Dashboard) handleKeyPress(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	case 'r', 'R':
 		d.update()
+		return nil
+	case 'm', 'M':
+		d.toggleMining()
 		return nil
 	}
 
@@ -127,6 +137,9 @@ func (d *Dashboard) Run() error {
 
 // Stop はダッシュボードを停止します
 func (d *Dashboard) Stop() {
+	if d.isMining {
+		d.stopMining()
+	}
 	d.stopChan <- true
 	d.app.Stop()
 }
@@ -274,11 +287,23 @@ func (d *Dashboard) updateMiningPanel() {
 		hashRate = formatHashRate(estimatedHashes)
 	}
 
+	// マイニング状態
+	miningStatus := "[red]● Stopped[white]"
+	miningInfo := ""
+	if d.isMining {
+		miningStatus = "[green]● Mining...[white]"
+		miningInfo = fmt.Sprintf("\nAuto-mined:         [cyan]%d blocks[white]", d.miningCounter)
+	}
+
 	content := fmt.Sprintf(
-		"[white]Hash Rate (est):    [cyan]%s[white]\n"+
+		"[white]Mining Status:      %s"+
+			"%s\n"+
+			"Hash Rate (est):    [cyan]%s[white]\n"+
 			"Avg Block Time:     [yellow]%.2f s[white]\n"+
 			"Target Block Time:  [green]%d s[white]\n"+
 			"Total Blocks:       [cyan]%d[white]",
+		miningStatus,
+		miningInfo,
 		hashRate,
 		avgBlockTime,
 		bc.TargetBlockTime,
@@ -357,4 +382,63 @@ func formatHashRate(hashes float64) string {
 		return fmt.Sprintf("%.2f MH/s", hashes/1000000)
 	}
 	return fmt.Sprintf("%.2f GH/s", hashes/1000000000)
+}
+
+// toggleMining はマイニングを開始/停止します
+func (d *Dashboard) toggleMining() {
+	if d.isMining {
+		d.stopMining()
+	} else {
+		d.startMining()
+	}
+}
+
+// startMining はバックグラウンドマイニングを開始します
+func (d *Dashboard) startMining() {
+	if d.isMining {
+		return
+	}
+
+	d.isMining = true
+	d.miningStopChan = make(chan bool)
+	go d.miningLoop()
+}
+
+// stopMining はバックグラウンドマイニングを停止します
+func (d *Dashboard) stopMining() {
+	if !d.isMining {
+		return
+	}
+
+	d.isMining = false
+	d.miningStopChan <- true
+}
+
+// miningLoop はバックグラウンドでブロックをマイニングし続けます
+func (d *Dashboard) miningLoop() {
+	for d.isMining {
+		select {
+		case <-d.miningStopChan:
+			return
+		default:
+			// ブロックをマイニング
+			d.miningCounter++
+			data := fmt.Sprintf("Auto-mined block #%d", d.miningCounter)
+
+			_, err := d.blockchain.AddBlock(data)
+			if err != nil {
+				// エラーが発生した場合は少し待機
+				time.Sleep(100 * time.Millisecond)
+				continue
+			}
+
+			// UIを更新
+			d.app.QueueUpdateDraw(func() {
+				d.update()
+			})
+
+			// 少し待機してから次のブロックをマイニング
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
 }
