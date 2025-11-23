@@ -1,4 +1,4 @@
-.PHONY: help test test-stage1 test-stage2 test-stage3 test-stage4 bench coverage fmt vet lint build clean
+.PHONY: help test test-stage1 test-stage2 test-stage3 test-stage4 bench coverage fmt vet lint build clean poc poc-stage1 poc-stage2
 
 # デフォルトターゲット
 .DEFAULT_GOAL := help
@@ -27,6 +27,11 @@ help: ## コマンド一覧を表示
 	@echo "🏗️  ビルド関連:"
 	@echo "  make build        - 全ステージをビルド"
 	@echo "  make clean        - ビルド成果物をクリーンアップ"
+	@echo ""
+	@echo "🎬 PoC/デモ実行:"
+	@echo "  make poc          - PoCデモを実行（Stage 1 & 2）"
+	@echo "  make poc-stage1   - Stage 1デモを実行"
+	@echo "  make poc-stage2   - Stage 2デモを実行"
 	@echo ""
 
 # テスト実行
@@ -107,3 +112,17 @@ clean: ## ビルド成果物をクリーンアップ
 	rm -f coverage.out coverage.html
 	go clean -cache
 	@echo "✅ Cleanup complete"
+
+# PoC/デモ実行
+poc: poc-stage1 poc-stage2 ## PoCデモを実行
+
+poc-stage1: ## Stage 1デモを実行
+	@echo "🎬 Stage 1 (Hash Chain) Demo"
+	@echo "======================================"
+	@cd stage1-hash-chain && go run .
+
+poc-stage2: ## Stage 2デモを実行
+	@echo ""
+	@echo "🎬 Stage 2 (Proof of Work) Demo"
+	@echo "======================================"
+	@cd stage2-pow && go run .

@@ -1,6 +1,8 @@
 # golangci-lint v2 設定ファイル
 # 2024-2025年のGoベストプラクティスに準拠
 
+version: "2"
+
 run:
   timeout: 5m
   tests: true
@@ -28,9 +30,6 @@ linters:
 
     # セキュリティ
     - gosec        # セキュリティ問題検出
-
-  disable:
-    - typecheck    # go buildでカバーされるため
 
 linters-settings:
   staticcheck:
