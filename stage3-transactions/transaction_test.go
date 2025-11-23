@@ -442,19 +442,19 @@ func TestTrimmedCopy(t *testing.T) {
 			Timestamp: 1234567890,
 		}
 
-		copy := tx.trimmedCopy()
+		txCopy := tx.trimmedCopy()
 
-		assert.Equal(t, tx.ID, copy.ID)
-		assert.Equal(t, tx.Timestamp, copy.Timestamp)
-		assert.Equal(t, len(tx.Inputs), len(copy.Inputs))
-		assert.Equal(t, len(tx.Outputs), len(copy.Outputs))
+		assert.Equal(t, tx.ID, txCopy.ID)
+		assert.Equal(t, tx.Timestamp, txCopy.Timestamp)
+		assert.Equal(t, len(tx.Inputs), len(txCopy.Inputs))
+		assert.Equal(t, len(tx.Outputs), len(txCopy.Outputs))
 
 		// 署名と公開鍵はnilであるべき
-		assert.Nil(t, copy.Inputs[0].Signature)
-		assert.Nil(t, copy.Inputs[0].PubKey)
+		assert.Nil(t, txCopy.Inputs[0].Signature)
+		assert.Nil(t, txCopy.Inputs[0].PubKey)
 
 		// TxIDとOutIndexは保持されているべき
-		assert.Equal(t, tx.Inputs[0].TxID, copy.Inputs[0].TxID)
-		assert.Equal(t, tx.Inputs[0].OutIndex, copy.Inputs[0].OutIndex)
+		assert.Equal(t, tx.Inputs[0].TxID, txCopy.Inputs[0].TxID)
+		assert.Equal(t, tx.Inputs[0].OutIndex, txCopy.Inputs[0].OutIndex)
 	})
 }

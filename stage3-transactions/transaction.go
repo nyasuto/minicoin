@@ -1,3 +1,5 @@
+// Package main implements transaction logic for the blockchain.
+// This includes transaction structures, signing, and verification.
 package main
 
 import (
@@ -73,7 +75,7 @@ func NewCoinbaseTx(to string, data string) *Transaction {
 
 // NewTransaction は新しいトランザクションを作成します
 // 注意: この実装は簡略版です。Issue #11でUTXO検索機能を追加します
-func NewTransaction(from, to string, amount int, blockchain interface{}) (*Transaction, error) {
+func NewTransaction(from, to string, amount int, _ interface{}) (*Transaction, error) {
 	if amount <= 0 {
 		return nil, fmt.Errorf("amount must be positive")
 	}

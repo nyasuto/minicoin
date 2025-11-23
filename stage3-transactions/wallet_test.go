@@ -123,7 +123,7 @@ func TestWalletSaveAndLoad(t *testing.T) {
 		require.NoError(t, err)
 
 		filename := "/tmp/test_wallet.dat"
-		defer os.Remove(filename)
+		defer func() { _ = os.Remove(filename) }()
 
 		// 保存
 		err = wallet.SaveToFile(filename)
@@ -145,7 +145,7 @@ func TestWalletSaveAndLoad(t *testing.T) {
 		require.NoError(t, err)
 
 		filename := "/tmp/test_wallet_sign.dat"
-		defer os.Remove(filename)
+		defer func() { _ = os.Remove(filename) }()
 
 		// データに署名
 		data := []byte("test data")
@@ -269,7 +269,7 @@ func TestWalletsSaveAndLoad(t *testing.T) {
 		address3, _ := wallets.CreateWallet()
 
 		filename := "/tmp/test_wallets.dat"
-		defer os.Remove(filename)
+		defer func() { _ = os.Remove(filename) }()
 
 		// 保存
 		err := wallets.SaveToFile(filename)
@@ -297,7 +297,7 @@ func TestWalletsSaveAndLoad(t *testing.T) {
 		require.NoError(t, err)
 
 		filename := "/tmp/test_wallets_sign.dat"
-		defer os.Remove(filename)
+		defer func() { _ = os.Remove(filename) }()
 
 		// 保存して読み込み
 		err = wallets.SaveToFile(filename)

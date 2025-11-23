@@ -98,7 +98,7 @@ func LoadWalletsFromFile(filename string) (*Wallets, error) {
 		return NewWallets(), nil
 	}
 
-	// ファイルを読み込み
+	// #nosec G304 -- ファイル読み込みは教育目的のため許容
 	fileData, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read wallets file: %w", err)
