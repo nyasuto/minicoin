@@ -176,10 +176,12 @@ func runInteractiveCLI(bc *Blockchain) {
 		case "7":
 			displayDifficultyStats(bc)
 		case "8":
+			runDashboard(bc)
+		case "9":
 			fmt.Println("\n👋 Minicoinをご利用いただきありがとうございました！")
 			return
 		default:
-			fmt.Println("❌ 無効な選択です。1-8の数字を入力してください。")
+			fmt.Println("❌ 無効な選択です。1-9の数字を入力してください。")
 		}
 	}
 }
@@ -204,7 +206,8 @@ func printMenu() {
 	fmt.Println("5. パフォーマンス比較")
 	fmt.Println("6. 難易度を変更")
 	fmt.Println("7. 難易度統計を表示")
-	fmt.Println("8. 終了")
+	fmt.Println("8. ダッシュボードを起動")
+	fmt.Println("9. 終了")
 	fmt.Println("====================================")
 }
 
@@ -475,4 +478,18 @@ func displayDifficultyStats(bc *Blockchain) {
 	fmt.Println("  - 調整は10ブロックごとに行われます")
 	fmt.Println("  - 平均時間が目標より長い場合、難易度は下がります")
 	fmt.Println("  - 平均時間が目標より短い場合、難易度は上がります")
+}
+
+// runDashboard はダッシュボードを起動します
+func runDashboard(bc *Blockchain) {
+	fmt.Println("\n🖥️  ダッシュボードを起動しています...")
+	fmt.Println("   (終了するには 'q' を押してください)")
+	time.Sleep(1 * time.Second)
+
+	dashboard := NewDashboard(bc)
+	if err := dashboard.Run(); err != nil {
+		fmt.Printf("❌ ダッシュボードエラー: %v\n", err)
+	}
+
+	fmt.Println("\n✓ ダッシュボードを終了しました")
 }
