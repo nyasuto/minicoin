@@ -259,14 +259,14 @@ func TestMineBlock(t *testing.T) {
 func TestValidateProofOfWork(t *testing.T) {
 	t.Run("正しくマイニングされたブロックの検証", func(t *testing.T) {
 		block := NewBlock(1, "Test Block", "previous_hash", 2)
-		MineBlock(block, 2)
+		_, _ = MineBlock(block, 2)
 
 		assert.True(t, ValidateProofOfWork(block))
 	})
 
 	t.Run("ハッシュが改ざんされたブロックの検証", func(t *testing.T) {
 		block := NewBlock(1, "Test Block", "previous_hash", 2)
-		MineBlock(block, 2)
+		_, _ = MineBlock(block, 2)
 
 		// ハッシュを改ざん
 		block.Hash = "00tampered_hash"
@@ -276,7 +276,7 @@ func TestValidateProofOfWork(t *testing.T) {
 
 	t.Run("ナンスが改ざんされたブロックの検証", func(t *testing.T) {
 		block := NewBlock(1, "Test Block", "previous_hash", 2)
-		MineBlock(block, 2)
+		_, _ = MineBlock(block, 2)
 
 		// ナンスを改ざん
 		block.Nonce = 999999
@@ -286,7 +286,7 @@ func TestValidateProofOfWork(t *testing.T) {
 
 	t.Run("データが改ざんされたブロックの検証", func(t *testing.T) {
 		block := NewBlock(1, "Test Block", "previous_hash", 2)
-		MineBlock(block, 2)
+		_, _ = MineBlock(block, 2)
 
 		// データを改ざん
 		block.Data = "Tampered Data"
@@ -296,7 +296,7 @@ func TestValidateProofOfWork(t *testing.T) {
 
 	t.Run("難易度が改ざんされたブロックの検証", func(t *testing.T) {
 		block := NewBlock(1, "Test Block", "previous_hash", 2)
-		MineBlock(block, 2)
+		_, _ = MineBlock(block, 2)
 
 		// 難易度を改ざん
 		block.Difficulty = 1
@@ -318,7 +318,7 @@ func TestValidateProofOfWork(t *testing.T) {
 
 		for _, diff := range difficulties {
 			block := NewBlock(1, "Test", "prev", diff)
-			MineBlock(block, diff)
+			_, _ = MineBlock(block, diff)
 
 			assert.True(t, ValidateProofOfWork(block), "難易度%dのブロックが無効", diff)
 		}
@@ -328,14 +328,14 @@ func TestValidateProofOfWork(t *testing.T) {
 func TestBlockValidate(t *testing.T) {
 	t.Run("Validateメソッドのテスト", func(t *testing.T) {
 		block := NewBlock(1, "Test Block", "previous_hash", 2)
-		MineBlock(block, 2)
+		_, _ = MineBlock(block, 2)
 
 		assert.True(t, block.Validate())
 	})
 
 	t.Run("無効なブロックのValidate", func(t *testing.T) {
 		block := NewBlock(1, "Test Block", "previous_hash", 2)
-		MineBlock(block, 2)
+		_, _ = MineBlock(block, 2)
 
 		block.Data = "Tampered"
 
@@ -346,7 +346,7 @@ func TestBlockValidate(t *testing.T) {
 func TestBlockString(t *testing.T) {
 	t.Run("Stringメソッドのテスト", func(t *testing.T) {
 		block := NewBlock(1, "Test Block", "previous_hash", 2)
-		MineBlock(block, 2)
+		_, _ = MineBlock(block, 2)
 
 		str := block.String()
 
@@ -477,28 +477,28 @@ func TestEdgeCases(t *testing.T) {
 func BenchmarkMineBlockDifficulty0(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		block := NewBlock(1, "Benchmark Block", "previous_hash", 0)
-		MineBlock(block, 0)
+		_, _ = MineBlock(block, 0)
 	}
 }
 
 func BenchmarkMineBlockDifficulty1(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		block := NewBlock(1, "Benchmark Block", "previous_hash", 1)
-		MineBlock(block, 1)
+		_, _ = MineBlock(block, 1)
 	}
 }
 
 func BenchmarkMineBlockDifficulty2(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		block := NewBlock(1, "Benchmark Block", "previous_hash", 2)
-		MineBlock(block, 2)
+		_, _ = MineBlock(block, 2)
 	}
 }
 
 func BenchmarkMineBlockDifficulty3(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		block := NewBlock(1, "Benchmark Block", "previous_hash", 3)
-		MineBlock(block, 3)
+		_, _ = MineBlock(block, 3)
 	}
 }
 
@@ -520,7 +520,7 @@ func BenchmarkCheckHashDifficulty(b *testing.B) {
 
 func BenchmarkValidateProofOfWork(b *testing.B) {
 	block := NewBlock(1, "Benchmark Block", "previous_hash", 2)
-	MineBlock(block, 2)
+	_, _ = MineBlock(block, 2)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		ValidateProofOfWork(block)

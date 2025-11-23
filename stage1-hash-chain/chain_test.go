@@ -63,8 +63,8 @@ func TestAddBlock(t *testing.T) {
 	t.Run("追加されたブロックのPreviousHashが正しい", func(t *testing.T) {
 		bc := NewBlockchain()
 
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 2")
 
 		block1 := bc.Blocks[1]
 		block2 := bc.Blocks[2]
@@ -77,7 +77,7 @@ func TestAddBlock(t *testing.T) {
 		bc := NewBlockchain()
 
 		for i := 1; i <= 10; i++ {
-			bc.AddBlock(fmt.Sprintf("Block %d", i))
+			_ = bc.AddBlock(fmt.Sprintf("Block %d", i))
 			assert.True(t, bc.IsValid(), "Block %d追加後もチェーンは有効であるべき", i)
 		}
 	})
@@ -97,9 +97,9 @@ func TestGetLatestBlock(t *testing.T) {
 	t.Run("ブロック追加後の最新ブロック", func(t *testing.T) {
 		bc := NewBlockchain()
 
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
-		bc.AddBlock("Block 3")
+		_ = bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 3")
 
 		latest := bc.GetLatestBlock()
 
@@ -120,8 +120,8 @@ func TestGetLatestBlock(t *testing.T) {
 func TestGetBlock(t *testing.T) {
 	t.Run("有効なインデックスでブロック取得", func(t *testing.T) {
 		bc := NewBlockchain()
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 2")
 
 		block, err := bc.GetBlock(1)
 
@@ -175,7 +175,7 @@ func TestGetChainLength(t *testing.T) {
 		bc := NewBlockchain()
 
 		for i := 1; i <= 5; i++ {
-			bc.AddBlock(fmt.Sprintf("Block %d", i))
+			_ = bc.AddBlock(fmt.Sprintf("Block %d", i))
 		}
 
 		length := bc.GetChainLength()
@@ -197,7 +197,7 @@ func TestIsValid(t *testing.T) {
 		bc := NewBlockchain()
 
 		for i := 1; i <= 5; i++ {
-			bc.AddBlock(fmt.Sprintf("Block %d", i))
+			_ = bc.AddBlock(fmt.Sprintf("Block %d", i))
 		}
 
 		assert.True(t, bc.IsValid())
@@ -211,8 +211,8 @@ func TestIsValid(t *testing.T) {
 
 	t.Run("ハッシュが改ざんされたブロックを検出", func(t *testing.T) {
 		bc := NewBlockchain()
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 2")
 
 		// ブロック1のハッシュを改ざん
 		bc.Blocks[1].Hash = "tampered_hash"
@@ -222,8 +222,8 @@ func TestIsValid(t *testing.T) {
 
 	t.Run("データが改ざんされたブロックを検出", func(t *testing.T) {
 		bc := NewBlockchain()
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 2")
 
 		// ブロック1のデータを改ざん（ハッシュはそのまま）
 		bc.Blocks[1].Data = "Tampered Data"
@@ -233,8 +233,8 @@ func TestIsValid(t *testing.T) {
 
 	t.Run("PreviousHashの不一致を検出", func(t *testing.T) {
 		bc := NewBlockchain()
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 2")
 
 		// ブロック2のPreviousHashを改ざん
 		bc.Blocks[2].PreviousHash = "wrong_hash"
@@ -244,8 +244,8 @@ func TestIsValid(t *testing.T) {
 
 	t.Run("インデックスの不連続を検出", func(t *testing.T) {
 		bc := NewBlockchain()
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 2")
 
 		// ブロック2のインデックスを改ざん
 		bc.Blocks[2].Index = 999
@@ -255,8 +255,8 @@ func TestIsValid(t *testing.T) {
 
 	t.Run("タイムスタンプの逆転を検出", func(t *testing.T) {
 		bc := NewBlockchain()
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 2")
 
 		// ブロック2のタイムスタンプを過去に変更
 		bc.Blocks[2].Timestamp = bc.Blocks[1].Timestamp - 1000
@@ -266,11 +266,11 @@ func TestIsValid(t *testing.T) {
 
 	t.Run("タイムスタンプが同じでも有効", func(t *testing.T) {
 		bc := NewBlockchain()
-		bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 1")
 
 		// ブロック1と同じタイムスタンプでブロック2を作成
 		timestamp := bc.Blocks[1].Timestamp
-		bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 2")
 		bc.Blocks[2].Timestamp = timestamp
 		bc.Blocks[2].Hash = bc.Blocks[2].CalculateHash()
 
@@ -295,8 +295,8 @@ func TestIsValid(t *testing.T) {
 func TestPrintChain(t *testing.T) {
 	t.Run("PrintChainが正常に実行される", func(t *testing.T) {
 		bc := NewBlockchain()
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 2")
 
 		// パニックしないことを確認
 		assert.NotPanics(t, func() {
@@ -319,7 +319,7 @@ func TestConcurrentAccess(t *testing.T) {
 			go func(id int) {
 				defer wg.Done()
 				for j := 0; j < blocksPerGoroutine; j++ {
-					bc.AddBlock(fmt.Sprintf("Goroutine %d - Block %d", id, j))
+					_ = bc.AddBlock(fmt.Sprintf("Goroutine %d - Block %d", id, j))
 				}
 			}(i)
 		}
@@ -340,7 +340,7 @@ func TestConcurrentAccess(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			for i := 0; i < 50; i++ {
-				bc.AddBlock(fmt.Sprintf("Block %d", i))
+				_ = bc.AddBlock(fmt.Sprintf("Block %d", i))
 				time.Sleep(1 * time.Millisecond)
 			}
 		}()
@@ -372,14 +372,14 @@ func BenchmarkAddBlock(b *testing.B) {
 	bc := NewBlockchain()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		bc.AddBlock(fmt.Sprintf("Block %d", i))
+		_ = bc.AddBlock(fmt.Sprintf("Block %d", i))
 	}
 }
 
 func BenchmarkIsValid(b *testing.B) {
 	bc := NewBlockchain()
 	for i := 0; i < 100; i++ {
-		bc.AddBlock(fmt.Sprintf("Block %d", i))
+		_ = bc.AddBlock(fmt.Sprintf("Block %d", i))
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -390,7 +390,7 @@ func BenchmarkIsValid(b *testing.B) {
 func BenchmarkGetLatestBlock(b *testing.B) {
 	bc := NewBlockchain()
 	for i := 0; i < 100; i++ {
-		bc.AddBlock(fmt.Sprintf("Block %d", i))
+		_ = bc.AddBlock(fmt.Sprintf("Block %d", i))
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

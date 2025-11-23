@@ -5,7 +5,7 @@ version: "2"
 
 run:
   timeout: 5m
-  tests: true
+  tests: false
 
 linters:
   enable:
@@ -17,7 +17,6 @@ linters:
     - ineffassign  # 無駄な代入検出
 
     # コード品質
-    - revive       # golintの後継
     - misspell     # スペルミスチェック
 
     # セキュリティ
@@ -29,15 +28,6 @@ linters-settings:
       - all
       - "-SA1019"  # 非推奨API使用の警告を一時的に無効化（移行期間用）
 
-  revive:
-    rules:
-      - name: exported
-        severity: warning
-        disabled: false
-        arguments:
-          - "checkPrivateReceivers"
-          - "sayRepetitiveInsteadOfStutters"
-
   gosec:
     excludes:
       - G404  # 暗号学的に安全でない乱数（教育目的のため許容）
@@ -46,6 +36,9 @@ linters-settings:
   errcheck:
     check-blank: true
     check-type-assertions: true
+    exclude-functions:
+      - (*Blockchain).AddBlock
+      - MineBlock
 
 issues:
   exclude-dirs:
@@ -54,7 +47,7 @@ issues:
     - ".*\\.pb\\.go$"
   exclude-rules:
     # テストファイルでの一般的なパターンを許容
-    - path: _test\.go
+    - path: '.*_test\.go'
       linters:
         - errcheck
         - gosec

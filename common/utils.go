@@ -1,3 +1,5 @@
+// Package common provides shared utility functions for the blockchain implementation.
+// This includes encoding, formatting, and validation utilities.
 package common
 
 import (

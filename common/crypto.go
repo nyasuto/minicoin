@@ -1,3 +1,5 @@
+// Package common provides cryptographic utilities for the blockchain implementation.
+// This includes hashing, key generation, and digital signature operations.
 package common
 
 import (
