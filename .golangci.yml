@@ -29,9 +29,6 @@ linters:
     # セキュリティ
     - gosec        # セキュリティ問題検出
 
-  disable:
-    - typecheck    # go buildでカバーされるため
-
 linters-settings:
   staticcheck:
     checks:

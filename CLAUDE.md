@@ -83,19 +83,24 @@ go test -bench=. ./stage2-pow/...
 ```bash
 # ステージ1: ハッシュチェーン
 cd stage1-hash-chain
-go run main.go
+go run .
 
 # ステージ2: Proof of Work
 cd stage2-pow
-go run main.go
+go run .
 
 # ステージ3: トランザクション
 cd stage3-transactions
-go run main.go
+go run .
 
 # ステージ4: P2Pネットワーク
 cd stage4-p2p
-go run main.go
+go run .
+
+# または、ビルドしてから実行（推奨）
+cd stage2-pow
+go build -o moz-pow
+./moz-pow
 ```
 
 ### 可視化ダッシュボード
