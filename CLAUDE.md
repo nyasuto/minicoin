@@ -8,8 +8,57 @@ Minicoin は、ブロックチェーン技術を段階的に実装すること�
 
 ## 開発ポリシー
 
-- git flow に従う
-- PR は必ず人間がマージする
+### 🚫 PR Merge Policy
+**ABSOLUTE RULE: Claude MUST NEVER merge PRs automatically**
+- ✅ PRの作成のみ可能 (`gh pr create`)
+- ❌ PRのマージは禁止 (`gh pr merge`)
+- ✅ 必ず人間がレビュー・マージする
+
+### Git Workflow
+
+**必須ルール:**
+- **mainブランチに直接コミット禁止**
+- 必ずfeatureブランチを作成
+- 全ての変更はPR経由
+
+**ブランチ命名:**
+- Feature: `feat/issue-X-feature-name`
+- Bug fix: `fix/issue-X-description`
+- Hotfix: `hotfix/X-description`
+
+**開発フロー:**
+1. mainからfeatureブランチ作成
+2. 実装
+3. **🔴 必須: `make quality` を実行**
+4. Conventional Commits形式でコミット
+5. リモートにpush
+6. PR作成
+7. 人間によるレビュー待ち
+
+### Quality Checks
+
+**コミット前に必ず実行:**
+```bash
+make quality
+```
+
+このコマンドは以下を実行：
+- `go test ./...` - 全テスト実行
+- `go fmt ./...` - フォーマットチェック
+- `golangci-lint run` - 静的解析
+
+**CI/CD:**
+- 全てのquality checksがCIでパス必須
+- マージ前にGitHub Actionsの成功確認
+
+### GitHub Issue/PR
+
+**言語:**
+- 全てのIssue・PRは日本語で記述
+
+**必須ラベル:**
+- Priority: `priority: critical/high/medium/low`
+- Type: `type: feature/bug/enhancement/docs/test/refactor/ci/cd/security`
 
 ## 開発コマンド
 
@@ -126,6 +175,8 @@ go run dashboard.go
 - **段階的な複雑性**: 各ステージは前のステージの上に構築される
 - **視覚的学習**: すべての概念に視覚的表現を用意
 - **実践的フォーカス**: 理論的完璧さより動作するコードを優先
+- **求められたことのみ実装**: 過剰実装禁止
+- **既存ファイルの編集を優先**: 新規ファイルは必要な場合のみ
 
 ## 実装時の注意点
 
@@ -134,3 +185,4 @@ go run dashboard.go
 3. 可視化機能は常に実装と並行して開発
 4. テストはベンチマークも含めて各ステージごとに作成
 5. コードの明確さと教育的価値を最優先
+6. **コミット前に必ず `make quality` を実行**
