@@ -1,0 +1,57 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.out
+coverage.html
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+moz.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Build artifacts
+stage1-hash-chain/stage1
+stage2-pow/stage2
+stage3-transactions/stage3
+stage4-p2p/stage4
+
+# Temporary files
+tmp/
+temp/
+
+# Configuration (if containing sensitive data)
+# config.yaml
+
+# Blockchain data
+data/
+blockchain.dat
+*.dat

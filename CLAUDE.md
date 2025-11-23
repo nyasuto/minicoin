@@ -4,11 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-Minicoinは、ブロックチェーン技術を段階的に実装することで暗号通貨の仕組みを学ぶ教育プロジェクトです。4つのステージで構成され、基本的なハッシュチェーンからP2Pネットワークまで段階的に構築します。
+Minicoin は、ブロックチェーン技術を段階的に実装することで暗号通貨の仕組みを学ぶ教育プロジェクトです。4 つのステージで構成され、基本的なハッシュチェーンから P2P ネットワークまで段階的に構築します。
+
+## 開発ポリシー
+
+- git flow に従う
+- PR は必ず人間がマージする
 
 ## 開発コマンド
 
 ### テスト実行
+
 ```bash
 # 全テストを実行
 go test ./...
@@ -24,6 +30,7 @@ go test -bench=. ./stage2-pow/...
 ```
 
 ### 各ステージの実行
+
 ```bash
 # ステージ1: ハッシュチェーン
 cd stage1-hash-chain
@@ -43,6 +50,7 @@ go run main.go
 ```
 
 ### 可視化ダッシュボード
+
 ```bash
 # CLIダッシュボード
 cd visualization/cli-dashboard
@@ -53,30 +61,34 @@ go run dashboard.go
 
 ## アーキテクチャと実装の段階
 
-### ステージ1: ハッシュチェーンの基礎
-- **目的**: ブロック構造、SHA-256ハッシング、チェーン検証の実装
+### ステージ 1: ハッシュチェーンの基礎
+
+- **目的**: ブロック構造、SHA-256 ハッシング、チェーン検証の実装
 - **主要ファイル**:
   - `stage1-hash-chain/block.go` - ブロック構造とメソッド
   - `stage1-hash-chain/chain.go` - ブロックチェーンロジック
-  - `stage1-hash-chain/main.go` - CLIインターフェース
+  - `stage1-hash-chain/main.go` - CLI インターフェース
 - **実装内容**: データ、タイムスタンプ、前ブロックハッシュを持つ基本構造
 
-### ステージ2: Proof of Work
+### ステージ 2: Proof of Work
+
 - **目的**: マイニングアルゴリズム、難易度調整、ナンス探索の実装
 - **主要ファイル**:
   - `stage2-pow/mining.go` - マイニングアルゴリズム
   - `stage2-pow/difficulty.go` - 難易度調整メカニズム
 - **実装内容**: 調整可能な難易度でのマイニング、パフォーマンス指標
 
-### ステージ3: トランザクションとUTXO
-- **目的**: ウォレット、デジタル署名、UTXOモデルの実装
+### ステージ 3: トランザクションと UTXO
+
+- **目的**: ウォレット、デジタル署名、UTXO モデルの実装
 - **主要ファイル**:
   - `stage3-transactions/wallet.go` - 公開鍵・秘密鍵ペア管理
   - `stage3-transactions/transaction.go` - トランザクションロジック
   - `stage3-transactions/utxo.go` - UTXO(未使用トランザクション出力)管理
 - **実装内容**: トランザクションの署名・検証、残高計算
 
-### ステージ4: P2Pネットワーク
+### ステージ 4: P2P ネットワーク
+
 - **目的**: ノード発見、ブロック伝播、コンセンサスの実装
 - **主要ファイル**:
   - `stage4-p2p/node.go` - ノード実装
@@ -85,23 +97,25 @@ go run dashboard.go
 - **実装内容**: マルチノードシミュレーション、ブロードキャスト、フォーク解決
 
 ### 共有コンポーネント
-- `common/crypto.go` - 暗号化関数(SHA-256, ECDSA等)
+
+- `common/crypto.go` - 暗号化関数(SHA-256, ECDSA 等)
 - `common/utils.go` - 共通ヘルパー関数
-- `visualization/` - CLI/Web可視化ツール
+- `visualization/` - CLI/Web 可視化ツール
 
 ## 技術スタック
 
-- **言語**: Go 1.21以上
+- **言語**: Go 1.21 以上
 - **暗号化**: `crypto/sha256`, `crypto/ecdsa`
-- **CLI可視化**: `termui`, `tcell`
-- **Web可視化**: Echo フレームワーク, D3.js
+- **CLI 可視化**: `termui`, `tcell`
+- **Web 可視化**: Echo フレームワーク, D3.js
 - **テスト**: Go `testing` パッケージ, `testify`
 
 ## 設定ファイル
 
 `config.yaml` で以下を設定:
+
 - `blockchain.difficulty`: マイニング難易度(デフォルト: 4)
-- `blockchain.block_time`: ブロック生成目標時間(デフォルト: 10秒)
+- `blockchain.block_time`: ブロック生成目標時間(デフォルト: 10 秒)
 - `blockchain.reward`: マイニング報酬(デフォルト: 50)
 - `network.port`: ネットワークポート(デフォルト: 8080)
 - `visualization.update_interval`: 更新間隔(デフォルト: 1000ms)
