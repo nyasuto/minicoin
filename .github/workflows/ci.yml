@@ -9,11 +9,7 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        go: ['1.21', '1.22']
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -22,7 +18,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: ${{ matrix.go }}
+        go-version: '1.25'
 
     - name: Download dependencies
       run: go mod download || true
@@ -41,7 +37,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.21'
+        go-version: '1.25'
 
     - name: Check formatting
       run: |
@@ -62,7 +58,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.21'
+        go-version: '1.25'
 
     - name: Run go vet
       run: make vet
@@ -78,7 +74,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.21'
+        go-version: '1.25'
 
     - name: Run tests with coverage
       run: |
@@ -103,7 +99,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.21'
+        go-version: '1.25'
 
     - name: Run benchmarks
       run: |
