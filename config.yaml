@@ -1,0 +1,32 @@
+# Minicoin Configuration File
+# このファイルはブロックチェーンの動作設定を定義します
+
+# ブロックチェーン設定
+blockchain:
+  difficulty: 4         # マイニング難易度（先頭のゼロの数）
+  block_time: 10       # ブロック生成目標時間（秒）
+  reward: 50           # マイニング報酬（コイン）
+
+# ネットワーク設定（Stage 4以降で使用）
+network:
+  port: 8080           # ノードが待ち受けるポート
+  peers:               # 接続先ピアのリスト
+    - localhost:8081
+    - localhost:8082
+
+# 可視化設定
+visualization:
+  update_interval: 1000 # 更新間隔（ミリ秒）
+  enable_web_ui: true   # WebUIを有効化
+  enable_cli: true      # CLIダッシュボードを有効化
+
+# マイニング設定（Stage 2以降で使用）
+mining:
+  enable: true          # マイニングを有効化
+  threads: 1            # マイニングスレッド数
+
+# ロギング設定
+logging:
+  level: "info"         # ログレベル: debug, info, warn, error
+  file: "minicoin.log" # ログファイル名
+  console: true         # コンソール出力を有効化
