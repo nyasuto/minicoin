@@ -71,7 +71,11 @@ func runInteractiveCLI(bc *Blockchain) {
 		printMenu()
 		fmt.Print("選択してください: ")
 
-		input, _ := reader.ReadString('\n')
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Printf("❌ エラー: 入力の読み取りに失敗しました: %v\n", err)
+			return
+		}
 		input = strings.TrimSpace(input)
 
 		switch input {
@@ -119,7 +123,11 @@ func printMenu() {
 // addBlockInteractive はユーザー入力からブロックを追加します
 func addBlockInteractive(bc *Blockchain, reader *bufio.Reader) {
 	fmt.Print("\nブロックに含めるデータを入力してください: ")
-	data, _ := reader.ReadString('\n')
+	data, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Printf("❌ エラー: 入力の読み取りに失敗しました: %v\n", err)
+		return
+	}
 	data = strings.TrimSpace(data)
 
 	if data == "" {
@@ -127,7 +135,7 @@ func addBlockInteractive(bc *Blockchain, reader *bufio.Reader) {
 		return
 	}
 
-	err := bc.AddBlock(data)
+	err = bc.AddBlock(data)
 	if err != nil {
 		fmt.Printf("❌ エラー: ブロックの追加に失敗しました: %v\n", err)
 		return
@@ -192,7 +200,11 @@ func displayBlockDetails(block *Block) {
 // displayBlockByIndex は指定されたインデックスのブロックを表示します
 func displayBlockByIndex(bc *Blockchain, reader *bufio.Reader) {
 	fmt.Print("\n表示するブロックのインデックスを入力してください: ")
-	input, _ := reader.ReadString('\n')
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Printf("❌ エラー: 入力の読み取りに失敗しました: %v\n", err)
+		return
+	}
 	input = strings.TrimSpace(input)
 
 	index, err := strconv.ParseInt(input, 10, 64)
@@ -241,8 +253,8 @@ func printStats(bc *Blockchain) {
 		fmt.Printf("最新ハッシュ:     %s\n", latestBlock.Hash)
 	}
 
-	genesisBlock, _ := bc.GetBlock(0)
-	if genesisBlock != nil {
+	genesisBlock, err := bc.GetBlock(0)
+	if err == nil && genesisBlock != nil {
 		fmt.Printf("ジェネシスハッシュ: %s\n", genesisBlock.Hash)
 	}
 
@@ -263,7 +275,7 @@ func exportBlockchain(bc *Blockchain, filename string) error {
 		return fmt.Errorf("JSON変換エラー: %w", err)
 	}
 
-	err = os.WriteFile(filename, data, 0644)
+	err = os.WriteFile(filename, data, 0600)
 	if err != nil {
 		return fmt.Errorf("ファイル書き込みエラー: %w", err)
 	}
