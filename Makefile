@@ -86,7 +86,7 @@ vet: ## コードを検証
 lint: ## golangci-lintを実行
 	@echo "🔎 Running golangci-lint..."
 	@which golangci-lint > /dev/null || (echo "⚠️  golangci-lint not found. Installing..."; go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest)
-	@golangci-lint run --timeout=5m || echo "✅ No code to lint yet"
+	@golangci-lint run --timeout=5m
 
 # 品質チェック
 quality: fmt lint test ## 全品質チェックを実行

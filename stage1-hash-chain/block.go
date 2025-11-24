@@ -1,3 +1,5 @@
+// Package main implements a basic hash chain blockchain.
+// This includes block structure and hash calculation.
 package main
 
 import (

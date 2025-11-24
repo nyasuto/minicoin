@@ -12,11 +12,11 @@ import (
 func TestExportBlockchain(t *testing.T) {
 	t.Run("正常なエクスポート", func(t *testing.T) {
 		bc := NewBlockchain()
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
+		_ = bc.AddBlock("Block 1")
+		_ = bc.AddBlock("Block 2")
 
 		tempFile := "test_export.json"
-		defer os.Remove(tempFile)
+		defer func() { _ = os.Remove(tempFile) }()
 
 		err := exportBlockchain(bc, tempFile)
 		require.NoError(t, err)
@@ -33,7 +33,7 @@ func TestExportBlockchain(t *testing.T) {
 		}
 
 		tempFile := "test_export_large.json"
-		defer os.Remove(tempFile)
+		defer func() { _ = os.Remove(tempFile) }()
 
 		err := exportBlockchain(bc, tempFile)
 		require.NoError(t, err)
@@ -53,7 +53,7 @@ func TestImportBlockchain(t *testing.T) {
 		bc.AddBlock("Block 2")
 
 		tempFile := "test_import.json"
-		defer os.Remove(tempFile)
+		defer func() { _ = os.Remove(tempFile) }()
 
 		err := exportBlockchain(bc, tempFile)
 		require.NoError(t, err)
@@ -75,10 +75,10 @@ func TestImportBlockchain(t *testing.T) {
 
 	t.Run("無効なJSONファイルのインポート", func(t *testing.T) {
 		tempFile := "test_invalid.json"
-		defer os.Remove(tempFile)
+		defer func() { _ = os.Remove(tempFile) }()
 
 		// 無効なJSONを書き込み
-		err := os.WriteFile(tempFile, []byte("{invalid json}"), 0644)
+		err := os.WriteFile(tempFile, []byte("{invalid json}"), 0600)
 		require.NoError(t, err)
 
 		_, err = importBlockchain(tempFile)
@@ -94,7 +94,7 @@ func TestImportBlockchain(t *testing.T) {
 		bc.Blocks[1].Hash = "tampered_hash"
 
 		tempFile := "test_invalid_chain.json"
-		defer os.Remove(tempFile)
+		defer func() { _ = os.Remove(tempFile) }()
 
 		err := exportBlockchain(bc, tempFile)
 		require.NoError(t, err)
@@ -111,11 +111,11 @@ func TestExportImportRoundTrip(t *testing.T) {
 		// 元のチェーンを作成
 		originalBC := NewBlockchain()
 		for i := 1; i <= 5; i++ {
-			originalBC.AddBlock(fmt.Sprintf("Test Block %d", i))
+			_ = originalBC.AddBlock(fmt.Sprintf("Test Block %d", i))
 		}
 
 		tempFile := "test_roundtrip.json"
-		defer os.Remove(tempFile)
+		defer func() { _ = os.Remove(tempFile) }()
 
 		// エクスポート
 		err := exportBlockchain(originalBC, tempFile)
@@ -210,7 +210,7 @@ func TestExportImportEdgeCases(t *testing.T) {
 		bc := NewBlockchain()
 
 		tempFile := "test_genesis_only.json"
-		defer os.Remove(tempFile)
+		defer func() { _ = os.Remove(tempFile) }()
 
 		err := exportBlockchain(bc, tempFile)
 		require.NoError(t, err)
@@ -229,7 +229,7 @@ func TestExportImportEdgeCases(t *testing.T) {
 		}
 
 		tempFile := "test_large_chain.json"
-		defer os.Remove(tempFile)
+		defer func() { _ = os.Remove(tempFile) }()
 
 		err := exportBlockchain(bc, tempFile)
 		require.NoError(t, err)
@@ -250,11 +250,11 @@ func BenchmarkExportBlockchain(b *testing.B) {
 	}
 
 	tempFile := "bench_export.json"
-	defer os.Remove(tempFile)
+	defer func() { _ = os.Remove(tempFile) }()
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		exportBlockchain(bc, tempFile)
+		_ = exportBlockchain(bc, tempFile)
 	}
 }
 
@@ -265,11 +265,11 @@ func BenchmarkImportBlockchain(b *testing.B) {
 	}
 
 	tempFile := "bench_import.json"
-	exportBlockchain(bc, tempFile)
-	defer os.Remove(tempFile)
+	_ = exportBlockchain(bc, tempFile)
+	defer func() { _ = os.Remove(tempFile) }()
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		importBlockchain(tempFile)
+		_, _ = importBlockchain(tempFile)
 	}
 }

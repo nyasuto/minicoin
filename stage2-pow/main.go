@@ -376,7 +376,7 @@ func validateChain(bc *Blockchain) {
 }
 
 // performanceComparison は異なる難易度でのパフォーマンス比較を実行します
-func performanceComparison(reader *bufio.Reader) {
+func performanceComparison(_ *bufio.Reader) {
 	fmt.Println("\n⚡ パフォーマンス比較")
 	fmt.Println("異なる難易度でのマイニング性能を比較します")
 	fmt.Println()

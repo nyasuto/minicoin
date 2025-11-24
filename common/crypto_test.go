@@ -83,8 +83,8 @@ func TestGenerateKeyPair(t *testing.T) {
 
 	// 秘密鍵が有効であることを確認
 	assert.NotNil(t, privateKey.D)
-	assert.NotNil(t, privateKey.PublicKey.X)
-	assert.NotNil(t, privateKey.PublicKey.Y)
+	assert.NotNil(t, privateKey.X)
+	assert.NotNil(t, privateKey.Y)
 
 	// 複数回生成して、異なる鍵が生成されることを確認
 	privateKey2, err := GenerateKeyPair()
@@ -199,7 +199,7 @@ func BenchmarkHash(b *testing.B) {
 
 func BenchmarkGenerateKeyPair(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		GenerateKeyPair()
+		_, _ = GenerateKeyPair()
 	}
 }
 
@@ -208,7 +208,7 @@ func BenchmarkSign(b *testing.B) {
 	data := []byte("Benchmark data for signing")
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		Sign(privateKey, data)
+		_, _ = Sign(privateKey, data)
 	}
 }
 

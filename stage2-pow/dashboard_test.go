@@ -28,9 +28,9 @@ func TestNewDashboard(t *testing.T) {
 
 	t.Run("複数ブロックを持つチェーンでダッシュボード生成", func(t *testing.T) {
 		bc := NewBlockchain(1)
-		bc.AddBlock("Block 1")
-		bc.AddBlock("Block 2")
-		bc.AddBlock("Block 3")
+		_, _ = bc.AddBlock("Block 1")
+		_, _ = bc.AddBlock("Block 2")
+		_, _ = bc.AddBlock("Block 3")
 
 		dashboard := NewDashboard(bc)
 
@@ -100,7 +100,7 @@ func TestGetValidityText(t *testing.T) {
 func TestDashboardUpdate(t *testing.T) {
 	t.Run("update()がパニックしない", func(t *testing.T) {
 		bc := NewBlockchain(2)
-		bc.AddBlock("Block 1")
+		_, _ = bc.AddBlock("Block 1")
 
 		dashboard := NewDashboard(bc)
 
@@ -128,7 +128,7 @@ func TestDashboardUpdate(t *testing.T) {
 func TestDashboardPanelUpdates(t *testing.T) {
 	t.Run("updateOverviewPanel()がパニックしない", func(t *testing.T) {
 		bc := NewBlockchain(2)
-		bc.AddBlock("Block 1")
+		_, _ = bc.AddBlock("Block 1")
 
 		dashboard := NewDashboard(bc)
 
@@ -140,7 +140,7 @@ func TestDashboardPanelUpdates(t *testing.T) {
 	t.Run("updateBlocksPanel()がパニックしない", func(t *testing.T) {
 		bc := NewBlockchain(2)
 		for i := 0; i < 10; i++ {
-			bc.AddBlock("Block " + string(rune(i+'0')))
+			_, _ = bc.AddBlock("Block " + string(rune(i+'0')))
 		}
 
 		dashboard := NewDashboard(bc)

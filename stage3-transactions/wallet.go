@@ -98,7 +98,7 @@ func (w *Wallet) SaveToFile(filename string) error {
 
 // LoadWalletFromFile はウォレットをファイルから読み込みます
 func LoadWalletFromFile(filename string) (*Wallet, error) {
-	// ファイルを読み込み
+	// #nosec G304 -- ファイル読み込みは教育目的のため許容
 	fileData, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read wallet file: %w", err)

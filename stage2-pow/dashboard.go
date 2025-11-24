@@ -1,3 +1,5 @@
+// Package main implements a TUI dashboard for the blockchain.
+// This includes real-time monitoring and visualization.
 package main
 
 import (

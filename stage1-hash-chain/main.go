@@ -285,6 +285,7 @@ func exportBlockchain(bc *Blockchain, filename string) error {
 
 // importBlockchain はJSON形式のブロックチェーンをインポートします
 func importBlockchain(filename string) (*Blockchain, error) {
+	// #nosec G304 -- ファイル読み込みは教育目的のため許容
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("ファイル読み込みエラー: %w", err)
