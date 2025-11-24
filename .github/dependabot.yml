@@ -1,0 +1,42 @@
+version: 2
+updates:
+  # GitHub Actionsの依存関係を自動更新
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    open-pull-requests-limit: 10
+
+  # Go modulesの依存関係を自動更新
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    labels:
+      - "dependencies"
+      - "go"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    open-pull-requests-limit: 10
+    groups:
+      # 開発用依存関係をグループ化
+      development:
+        patterns:
+          - "github.com/stretchr/testify"
+          - "github.com/gizak/termui*"
+        update-types:
+          - "minor"
+          - "patch"
