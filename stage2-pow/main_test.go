@@ -324,10 +324,18 @@ func TestDifficultySettings(t *testing.T) {
 // ベンチマーク
 func BenchmarkAddBlock(b *testing.B) {
 	bc := NewBlockchain(1)
+	// ベンチマーク中に難易度が上がらないように調整機能を無効化
+	bc.TargetBlockTime = 0
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		bc.AddBlock("Benchmark Block")
+		// メモリ爆発を防ぐために定期的にチェーンをリセット
+		if len(bc.Blocks) > 1000 {
+			// 最新のブロックを保持して新しいチェーンのベースにする
+			lastBlock := bc.Blocks[len(bc.Blocks)-1]
+			bc.Blocks = []*Block{lastBlock}
+		}
 	}
 }
 
