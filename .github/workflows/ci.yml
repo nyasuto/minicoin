@@ -87,7 +87,7 @@ jobs:
         go test -v -coverprofile=coverage.out -covermode=atomic ./... || echo "No tests to run yet"
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         files: ./coverage.out
         flags: unittests
