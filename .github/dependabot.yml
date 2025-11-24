@@ -14,7 +14,7 @@ updates:
     commit-message:
       prefix: "chore(deps)"
       include: "scope"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
 
   # Go modulesの依存関係を自動更新
   - package-ecosystem: "gomod"
@@ -30,7 +30,7 @@ updates:
     commit-message:
       prefix: "chore(deps)"
       include: "scope"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     groups:
       # 開発用依存関係をグループ化
       development:
