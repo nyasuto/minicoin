@@ -1,69 +1,57 @@
-# golangci-lint 設定ファイル
-# 2024-2025年のGoベストプラクティスに準拠
-
 version: "2"
-
 run:
-  timeout: 5m
   tests: false
-
 linters:
   enable:
-    # 基本リンター
-    - errcheck     # エラーチェック漏れ検出
-    - govet        # Go標準のvet
-    - staticcheck  # 最新のGoベストプラクティス検出
-    - unused       # 未使用コード検出
-    - ineffassign  # 無駄な代入検出
-
-    # コード品質
-    - misspell     # スペルミスチェック
-
-    # セキュリティ
-    - gosec        # セキュリティ問題検出
-
-linters-settings:
-  staticcheck:
-    checks:
-      - all
-      - "-SA1019"  # 非推奨API使用の警告を一時的に無効化（移行期間用）
-
-  gosec:
-    excludes:
-      - G404  # 暗号学的に安全でない乱数（教育目的のため許容）
-      - G304  # ファイル読み込み（教育目的のため許容）
-
-  errcheck:
-    check-blank: true
-    check-type-assertions: true
-    exclude-functions:
-      - (*Blockchain).AddBlock
-      - MineBlock
-
+    - gosec
+    - misspell
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+      exclude-functions:
+        - (*Blockchain).AddBlock
+        - MineBlock
+    gosec:
+      excludes:
+        - G404
+        - G304
+    staticcheck:
+      checks:
+        - all
+        - -SA1019
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - errcheck
+          - gosec
+        path: .*_test\.go
+      - linters:
+          - errcheck
+        text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv). is not checked
+      - linters:
+          - gosec
+        text: G304
+    paths:
+      - .*\.pb\.go$
+      - vendor
+      - third_party$
+      - builtin$
+      - examples$
 issues:
-  exclude-dirs:
-    - vendor
-  exclude-files:
-    - ".*\\.pb\\.go$"
-  exclude-rules:
-    # テストファイルでの一般的なパターンを許容
-    - path: '.*_test\.go'
-      linters:
-        - errcheck
-        - gosec
-
-    # 共通の誤検出を除外
-    - text: "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*Flush|os\\.Remove(All)?|.*print(f|ln)?|os\\.(Un)?Setenv). is not checked"
-      linters:
-        - errcheck
-
-    # G304: ファイル読み込みの警告を除外（教育目的）
-    - text: "G304"
-      linters:
-        - gosec
-
   max-issues-per-linter: 50
   max-same-issues: 3
   uniq-by-line: true
-
-# output設定はデフォルトを使用
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
