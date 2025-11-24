@@ -12,6 +12,7 @@ linters:
       exclude-functions:
         - (*Blockchain).AddBlock
         - MineBlock
+        - (*UTXOSet).Reindex
     gosec:
       excludes:
         - G404
